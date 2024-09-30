@@ -81,6 +81,7 @@ Suggestions:
 - Write the data to CSV
 - ...
 
+<<<<<<< Updated upstream
 3 stages -- related to something called the "Extract, Transform, Load" model (ETL)
 
 What are the components of a data processing pipeline?
@@ -92,6 +93,15 @@ What are the components of a data processing pipeline?
     statistics, etc.
 3. Output -- save the results to a file or a database; display
     them to the user; etc.
+=======
+3 Stages:
+ETL (Extract, Transform, Load)
+
+1.Input
+2.Processing
+3.Output
+
+>>>>>>> Stashed changes
 """
 
 """
