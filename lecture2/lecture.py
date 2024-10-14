@@ -376,7 +376,7 @@ def less():
 cat_1()
 cat_2()
 
-less()
+# less()
 
 """
 This concludes the first part on "looking around"
@@ -413,7 +413,7 @@ Shell, continued
 
 Recall the three-part model: Looking around, getting help, doing something
 
-Zork demo:
+=== Zork demo ===
 
 https://textadventures.co.uk/games/play/5zyoqrsugeopel3ffhz_vq
 
@@ -442,6 +442,8 @@ You can usually use:
 - chatGPT
 - (new!) AI tools in the shell: e.g. https://github.com/ibigio/shell-ai
 
+# Example: q make a new git branch -> returns the right git syntax
+
 to determine the right command to run for what you want to do.
 
 Important caveat: you need to know what it is you want to do first!
@@ -451,11 +453,12 @@ Important caveat: you need to know what it is you want to do first!
 # how to find all files matching a name unix?
 # https://www.google.com/search?client=firefox-b-1-d&q=how+to+find+all+files+matching+a+name+unix
 # https://stackoverflow.com/questions/3786606/find-all-files-matching-name-on-linux-system-and-search-with-them-for-text
+# find ../lecture1 -type f -name lecture.py -exec grep -l "=== Poll ===" {} +
 
 # Important notes:
 # Using Google+AI doesn't obliviate the need to understand things ourselves.
-# - we still needed to know the platform we are on (Unix)
 # - we still needed to know how to modify the command for your own purposes
+# - we still needed to know the platform we are on (Unix)
 # - (for the AI tool) you still need to figure out how to install it (:
 #   + as some of you have noticed (especially on Windows), installing some software dev tools
 #     can seem like even more work than using/understanding the program itself.
@@ -469,43 +472,70 @@ we can make a plan for what to do.
 The same advice applies to all commands: knowing how to "modify" the current
 state relevant to your command is often the second step to get a grip on how
 the command works.
+(In the context of a Python library such as Pandas:
+ python3 -i to interactively "look around"
+ the values of variables, the online documentation to see the
+ different functions available, actually write code to do what
+ you want.)
 
 (And, once again, this is also exactly what we would do in a text-based adventure :))
 
 So what should we do?
 We need a way to move around and modify stuff:
 
-- cd
-- mkdir
-- touch
+- cd -- change directory
+- mkdir -- make a new directory
+- touch -- make a new file
+
+Example:
+- mkdir subfolder
+- cd subfolder
+- touch mod.py
+- open mod.py
 """
 
 def cd(dir):
+    # Sometimes necessary to change the directory from which your
+    # script was called
     os.chdir(dir)
 
 def touch(file):
     with open(file, 'w') as fh:
         fh.write("\n")
 
+# touch("mod-2.py")
+
 """
 === Anatomy of a shell command ===
 
 Commands are given arguments, like this:
 
+cmd -<argument name> <argument value>
 cmd --<argument name> <argument value>
+
+Example:
+  git --version to get the version of git
+  OR git -v are both equivalent
+
+This is typical: usually we use a single dash + a single letter
+as a shortcut for a double dash plus a long argument name.
 
 We have seen some of these already.
 
 How subprocess works:
 """
 
-def run_python3_file(file):
-    # TODO
-    raise NotImplementedError
+def run_git_version():
+    # Both of these are equivalent
+    subprocess.run(["git", "--version"])
+    subprocess.run(["git", "-v"])
+
+# run_git_version()
 
 def run_python3_file_interactive(file):
-    # TODO
-    raise NotImplementedError
+    subprocess.run(["python3", "-i", file])
+
+# run_python3_file_interactive("subfolder/mod.py")
 
 """
 === I/O ===
@@ -518,19 +548,68 @@ Selected list of important operators
 (also called shell combinators):
 - |, ||, &&, >, >>, <, <<
 
+Most useful:
+- Operator >
+  Ends the output into a file.
+  (This is called redirection)
+
+- Operator >>
+  Instead of replacing the file, append new content to the end of it
+
+- || and &&
+  Behave like "or" and "and" in regular programs
+  Useful for error handling
+
+  cmd1 || cmd2 -- do cmd1, if it fails, do command 2
+  cmd1 && cmd2 -- do cmd1, if it succeeds, do command 2
+
+Examples:
+  python3 lecture.py || echo "Hello"
+  python3 lecture.py && echo "Hello"
+
 (Skip most of these depending on time)
+
+- |
+  Chains together two commands
 
 Exercises:
 
 - cat followed by ls
+
+  Fixed example from class: cat folder.txt | xargs ls
+
+  Better example (more common):
+  Using "grep" to search for a particular pattern
+
+  Example, find all polls in lecture 1:
+
+    cat ../lecture1/lecture.py | grep "forms.gle"
+
+  Find all packages installed with conda that contain the word "data":
+
+    conda list | grep "data"
+
+  Output:
+
+    astropy-iers-data         0.2024.6.3.0.31.14 py312hca03da5_0
+    datashader                0.16.2          py312hca03da5_0
+    importlib-metadata        7.0.1           py312hca03da5_0
+    python-tzdata             2023.3             pyhd3eb1b0_0
+    stack_data                0.2.0              pyhd3eb1b0_0
+    tzdata                    2024a                h04d1e81_0
+    unicodedata2              15.1.0          py312h80987f9_0
+
+Skipped for time:
+- ls followed by cat
+  (equivalent to just ls)
 - cat followed by cd
+  (using xargs)
 - ls, save the results to a file
+  (using >)
 - python3, save the results to a file
-- (Hard:) ls followed by cd into the first directory of interest
+  (using >)
+- (Hard) cat followed by cd into the first directory of interest
 
-"""
-
-"""
 === Git ===
 
 We can think of git under the same model as other shell commands!
@@ -552,16 +631,82 @@ Finally, doing stuff:
 
 For getting others' changes:
 - git pull
+
+(Related commands -- not as worried about:)
 - git fetch
 - git checkout
 
 For sharing/publishing your own changes
 (a common sequence of three to run):
-- git add
-- git commit
+- git add .
+
+  After a git add, I usually do a:
+  git status
+  git diff --staged
+
+  AND:
+  Run the code again just to make sure everything looks good
+
+- git commit -m "Commit message"
+
+  Modify what you just did:
+  git commit --amend
+
+  Then I would do a git status again
+
 - git push
 
-Others (selected most useful):
+=== Recap ===
+
+We finished the "getting help" part and saw the "doing stuff" part
+We saw command arguments and input/output
+We saw the basics of git
+
+We will finish the rest of the file next time.
+
+=========================================
+
+=== Oct 14 ===
+
+Three things that came up last time:
+
+i) Text editors in the shell
+
+The most "accessible" of these is probably nano.
+
+Sometimes files open by default in vim and you have to
+know how to close the file.
+"""
+
+def edit_file(file):
+    subprocess.run(["nano", file])
+
+# Let's edit the lecture file and add something here.
+
+"""
+Text editors get opened when you run git commands
+like git commit without a message.
+
+ii) A very important "informational" command I missed:
+git diff
+
+iii) A general principle that we have seen several times:
+After doing a "doing stuff" command,
+we often want to go back to the informational commands
+to see what changed.
+
+Example:
+- git status
+- git add
+- git status
+- git commit
+- git status
+- git push
+- git status
+
+=== Finishing up git ===
+
+Other git commands (selected most useful):
 - git rebase
 - git rebase -i
 - git merge
@@ -575,6 +720,8 @@ def git_status():
     raise NotImplementedError
 
 """
+Finishing up the shell:
+
 === Dangers of the shell ===
 
 Be aware!
@@ -591,18 +738,21 @@ def rm_rf_slash():
 # rm_rf_slash()
 
 """
+sudo: run a command in true "admin" mode
+"""
+
+"""
 Aside: This is part of what makes the shell so useful, but it is also
 what makes the shell so dangerous!
 
 All shell commands are assumed to be executed by a "trusted" user.
 It's like the admin console for the computer.
 
-Person who gave an LLM agent access to their shell:
+Example:
+person who gave an LLM agent access to their shell:
 https://twitter.com/bshlgrs/status/1840577720465645960
 
 "At this point I was amused enough to just let it continue. Unfortunately, the computer no longer boots."
-
-sudo: run a command in true "admin" mode
 """
 
 # sudo rm -rf "/very/important/operating-system/file"
@@ -619,8 +769,6 @@ The shell IS:
 
 The shell is NOT (necessarily):
 
-- a friendly, helpful, usable interface for most beginners
-
 - a good way to write complex programs or scripts (use Python instead!)
 
 - free from errors (it is often easy to make mistakes in the shell)
@@ -631,27 +779,37 @@ The shell is NOT (necessarily):
 
 Q: How is this useful for data processing?
 
-A: Managing input and output: often through the filesystem or through other
-  programs on the system (e.g. a database implementation or a network API)
+A: Many possible answers! In decreasing order of importance:
 
-A: Many software tools provide useful interfaces that can only be accessed
-   through the shell.
+- Interacting with software dev tools (like git, Docker, and package managers)
+  -- many tools are built to be accessed through the shell.
 
-A: Data processing scripts have to interact with these
-   external tools all the time.
+- Give us a better understanding of how programs run "under the hood"
+  and how the filesystem and operating system work
+  (this is where almost all input/output happens!)
 
-A: The shell is very useful for software development in general.
+- Gives you another option to write more powerful functions in Python
+  by directly calling into the shell (subprocess)
+  (e.g. fetching data with git; connecting to a
+  database implementation or a network API)
 
-Q: How is the shell different from Python?
+- Writing quick-and-dirty data processing scripts direclty in the shell
+  (Common but we will not be doing this in this class).
 
-A: It's not really! Both of these are useful "glue" languages -- ways to
+  Example: Input as a CSV, filter out lines that are not relevant, and
+  add up the results to sort by most common keywords or labels.
+
+Q: How is the shell similar/different from Python?
+
+A: Both of these are useful "glue" languages -- ways to
    connect together different programs.
 
-A: In fact, we have seen that anything that can be done in the shell
-   can be done directly in a Python script.
-   (using subprocess)
+   Python is more high-level, and the shell is more like what happens
+   under the hood.
 
-=== Where we are going next? ===
+   Knowing the shell can improve your Python scripts and vice versa.
+
+=== Skipped topics ===
 
 Things we didn't cover:
 
@@ -661,25 +819,14 @@ Things we didn't cover:
 
 - Regular expressions for pattern matching in text
 
-=== Further resources ===
+=== Miscellaneous further resources ===
 
-ChatGPT is often very good at generating/explaining shell commands.
+Future of the shell paper:
 
-Here is a fun tool which lets you see the state modified by a shell command
-before executing it:
-https://github.com/binpash/try
-
-e.g.: try rm -rf /
-
-Several tools now exist for using AI in the shell to help you come up
-with the right syntax for shell commands:
-https://github.com/ibigio/shell-ai
-
-Future of the shell:
-- https://www.youtube.com/watch?v=dMrfLCjtHM4
 - https://dl.acm.org/doi/pdf/10.1145/3458336.3465296
 
-Regular expressions:
+Regular expressions
+(for if you are using grep or find):
 
 - Regex debugger: https://regex101.com/
 
