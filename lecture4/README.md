@@ -70,6 +70,8 @@ Plan:
   Types of parallelism (in your pipeline)
   Quantifying parallelism (in your pipeline)
 
+## Oct 28 (No lecture)
+
 ## Oct 30
 
 Reminders:
@@ -100,3 +102,5 @@ Plan:
 
 - Revisit data race example from Oct 25 in-class poll (if time)
   race-example.py
+
+Questions?
