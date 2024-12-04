@@ -103,3 +103,23 @@ Plan:
   (Spoiler: or any distributed system).
 
 Questions?
+
+## Dec 4
+
+Announcements:
+
+- HW2 + HW1 makeup + in-class polls due Monday
+
+- OH Today, Thu, Fri
+
+Plan:
+
+- Go over the final + final study guide
+
+- Quick recap from last time
+
+- Poll
+
+- Continuing about different notions of time with a code example
+
+- How time is used in a streaming system and failure cases (time permitting)
